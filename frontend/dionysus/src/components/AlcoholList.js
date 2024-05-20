@@ -1,37 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+// AlcoholList.js
+import React, { useState, useEffect } from "react";
+import { fetchAlcohols, searchAlcohols, addReview, fetchReviews } from "../services/api";
+import SortOptions from "./SortOptions";
+import Review from "./Review";
 
-function AlcoholList() {
-  const [alcoholList, setAlcoholList] = useState([]);
+const AlcoholList = ({ category }) => {
+  const [alcohols, setAlcohols] = useState([]);
+  const [sortBy, setSortBy] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchAlcoholList();
-  }, []);
+    const search = async () => {
+      try {
+        let data;
+        if (searchTerm.trim() !== "") {
+          data = await searchAlcohols(category, searchTerm);
+        } else {
+          data = await fetchAlcohols(category, sortBy);
+        }
+        setAlcohols(data);
+      } catch (error) {
+        console.error("Failed to fetch alcohols:", error);
+      }
+    };
 
-  const fetchAlcoholList = async () => {
-    try {
-      const response = await api.get('/alcohol/selectalcohol?name='); // API 호출 주소와 파라미터를 설정해야 합니다.
-      setAlcoholList(response.data);
-    } catch (error) {
-      console.error('Error fetching alcohol list:', error);
-    }
-  };
+    search();
+  }, [category, sortBy, searchTerm]);
 
   return (
     <div>
-      <h2>술 목록</h2>
+      <input
+        type="text"
+        placeholder="검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <SortOptions sortBy={sortBy} setSortBy={setSortBy} />
       <ul>
-        {alcoholList.map((alcohol) => (
+        {alcohols.map((alcohol) => (
           <li key={alcohol.alcohol_name}>
-            <div>{alcohol.alcohol_name}</div>
-            <div>{alcohol.category}</div>
-            <div>{alcohol.country_of_origin}</div>
-            {/* 술 목록의 다른 정보들을 추가해주세요 */}
+            <h2>{alcohol.alcohol_name}</h2>
+            <p>Category: {alcohol.category}</p>
+            <p>Country of Origin: {alcohol.country_of_origin}</p>
+            <p>Company: {alcohol.com}</p>
+            <p>ABV: {alcohol.abv}%</p>
+            <p>Volume: {alcohol.volume}ml</p>
+            <p>Price: {alcohol.price} KRW</p>
+            <p>Tags: {alcohol.tag}</p>
+            <Review alcoholName={alcohol.alcohol_name} />
           </li>
         ))}
       </ul>
     </div>
   );
-}
+};
 
 export default AlcoholList;

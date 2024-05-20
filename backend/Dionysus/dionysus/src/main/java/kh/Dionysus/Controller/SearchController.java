@@ -13,14 +13,10 @@ import java.util.List;
 @RequestMapping("/search")
 public class SearchController {
 
-
-
     @GetMapping("/selectsearch")
-    public ResponseEntity<List<AlcoholTotalDto>> selectSearch(@RequestParam String search) throws SQLException {
-            SearchDao dao = new SearchDao();
-            List<AlcoholTotalDto> SearchAlcohol = dao.alcoholSearch(search);
-            return ResponseEntity.ok(SearchAlcohol);
-
-
+    public ResponseEntity<List<AlcoholTotalDto>> selectSearch(@RequestParam String category, @RequestParam String search) throws SQLException {
+        SearchDao dao = new SearchDao();
+        List<AlcoholTotalDto> searchAlcohol = dao.alcoholSearch(category, search);
+        return ResponseEntity.ok(searchAlcohol);
     }
 }

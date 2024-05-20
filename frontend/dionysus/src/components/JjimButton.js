@@ -1,23 +1,22 @@
-// src/components/JjimButton.js
 import React, { useState } from 'react';
-import api from '../services/api';
+import axios from 'axios';
 
-function JjimButton({ alcoholName }) {
-  const [jjimmed, setJjimmed] = useState(false);
+function JjimButton({ alcoholName, isJjim }) {
+  const [jjim, setJjim] = useState(isJjim);
 
-  const handleClick = async () => {
-    try {
-      await api.post('/alcohol/jjim', { alcoholName });
-      setJjimmed(!jjimmed);
-    } catch (error) {
-      console.error('Error toggling jjim:', error);
+  const toggleJjim = async () => {
+    if (jjim) {
+      await axios.delete(`http://localhost:8111/jjim/remove`, { params: { alcoholName } });
+    } else {
+      await axios.post(`http://localhost:8111/jjim/add`, { alcoholName });
     }
+    setJjim(!jjim);
   };
 
   return (
-    <div className="jjim-button">
-      <button onClick={handleClick}>{jjimmed ? '찜 취소' : '찜하기'}</button>
-    </div>
+    <button onClick={toggleJjim}>
+      {jjim ? '찜 해제' : '찜하기'}
+    </button>
   );
 }
 

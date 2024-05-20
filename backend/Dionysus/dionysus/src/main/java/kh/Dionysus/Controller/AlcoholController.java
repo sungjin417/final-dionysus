@@ -14,10 +14,9 @@ import java.util.List;
 @RequestMapping("/alcohol")
 public class AlcoholController {
     @GetMapping("/selectalcohol")
-    public ResponseEntity<List<AlcoholTotalDto>> selectAlcohol(@RequestParam String name) throws SQLException {
+    public ResponseEntity<List<AlcoholTotalDto>> selectAlcohol(@RequestParam String name, @RequestParam(required = false) String sortBy) throws SQLException {
         AlcoholDao dao = new AlcoholDao();
-        List<AlcoholTotalDto> AlcoholList = dao.alcoholSelect(name);
+        List<AlcoholTotalDto> AlcoholList = dao.alcoholSelect(name, sortBy);
         return new ResponseEntity<>(AlcoholList, HttpStatus.OK);
     }
-
 }
